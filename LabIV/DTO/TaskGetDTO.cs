@@ -28,7 +28,7 @@ namespace LabIV.DTO
 
         public List<Comment> Comments { get; set; }
 
-        public static TaskGetDTO FromTask(Models.Task task)
+        public static TaskGetDTO FromTask(Task task)
         {
 
             return new TaskGetDTO
@@ -40,6 +40,7 @@ namespace LabIV.DTO
                 TaskImportance = task.TaskImportance,
                 TaskState = task.TaskState,
                 DateClosed = task.DateClosed,
+                //Comments = task.Comments,
                 NumberOfComments = task.Comments.Count
 
             };

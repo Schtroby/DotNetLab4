@@ -29,24 +29,24 @@ namespace LabIV.DTO
 
         public static Task ToTask(TaskPostDTO task)
         {
-            TaskImportance TaskImportance = Models.TaskImportance.Low;
+            TaskImportance TaskImportance = TaskImportance.Low;
             if (task.TaskImportance == "Medium")
             {
-                TaskImportance = Models.TaskImportance.Medium;
+                TaskImportance = TaskImportance.Medium;
             }
             else if (task.TaskImportance == "Hight")
             {
-                TaskImportance = Models.TaskImportance.Hight;
+                TaskImportance = TaskImportance.Hight;
             }
 
-            TaskState TaskState = Models.TaskState.Open;
+            TaskState TaskState = TaskState.Open;
             if (task.TaskState == "InProgress")
             {
-                TaskState = Models.TaskState.InProgress;
+                TaskState = TaskState.InProgress;
             }
             else if (task.TaskState == "Closed")
             {
-                TaskState = Models.TaskState.Closed;
+                TaskState = TaskState.Closed;
             }
 
             return new Task
