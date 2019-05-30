@@ -56,14 +56,14 @@ namespace LabIV
                     TermsOfService = "None",
                     Contact = new Contact
                     {
-                        Name = "Lucian Maniu",
+                        Name = "Balogh Dénes",
                         Email = string.Empty,
                         Url = ""
                     },
                     License = new License
                     {
                         Name = "Use under LICX",
-                        Url = "https://example.com/license"
+                        Url = ""
                     }
 
                 });

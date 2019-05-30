@@ -1,8 +1,11 @@
+using LabIV.DTO;
 using LabIV.Models;
 using LabIV.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Tests
 {
@@ -47,6 +50,79 @@ namespace Tests
 
             }
         }
+
+        [Test]
+        public void AuthenticateShouldLogInAUser()
+        {
+            var options = new DbContextOptionsBuilder<TasksDbContext>()
+              .UseInMemoryDatabase(databaseName: nameof(AuthenticateShouldLogInAUser))
+              .Options;
+
+            using (var context = new TasksDbContext(options))
+            {
+                var usersService = new UsersService(context, config);
+                var added = new LabIV.DTO.RegisterPostDTO
+
+                {
+
+                    FirstName = "Julia",
+                    LastName = "Bush",
+                    Username = "julia",
+                    Email = "julia@gmail.com",
+                    Password = "1234567"
+                };
+                var result = usersService.Register(added);
+                var authenticated = new LabIV.DTO.LoginPostDTO
+                {
+                    Username = "julia",
+                    Password = "1234567"
+                };
+                var authresult = usersService.Authenticate(added.Username, added.Password);
+
+                Assert.IsNotNull(authresult);
+                Assert.AreEqual(1, authresult.Id);
+                Assert.AreEqual(authenticated.Username, authresult.Username);
+            }
+        }
+
+        [Test]
+        public void GetAllShouldReturnAllUser()
+        {
+            var options = new DbContextOptionsBuilder<TasksDbContext>()
+              .UseInMemoryDatabase(databaseName: nameof(AuthenticateShouldLogInAUser))
+              .Options;
+
+            using (var context = new TasksDbContext(options))
+            {
+                var usersService = new UsersService(context, config);
+                var added = new LabIV.DTO.RegisterPostDTO
+
+                {
+
+                    FirstName = "Julia",
+                    LastName = "Bush",
+                    Username = "julia",
+                    Email = "julia@gmail.com",
+                    Password = "1234567"
+                };
+                var result = usersService.Register(added);
+               
+                var users = context.Users.Select(user => new UserGetDTO
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Username = user.Username,
+                    Token = null
+
+                });
+
+                Assert.IsNotEmpty(users);
+                Assert.AreEqual(1, users.Count());
+                //Assert.IsEmpty(users);
+
+            }
+        }
+
 
     }
 }
