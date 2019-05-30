@@ -46,6 +46,7 @@ namespace LabIV.Controllers
         /// <param name="id">Task ID</param>
         /// <returns>A task with a given ID</returns>
         [HttpGet("{id}", Name = "Get")]
+        [Authorize]
         public IActionResult Get(int id)
         {
             var found = tasksService.GetById(id);
@@ -90,7 +91,7 @@ namespace LabIV.Controllers
         /// <response code="201">Returns the newly created item</response>
         /// <response code="400">If the item is null</response>
         [HttpPost]
-       // [Authorize]
+        [Authorize]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         public void Post([FromBody] Task task)
@@ -130,7 +131,7 @@ namespace LabIV.Controllers
         /// <param name="id">task ID</param>
         /// <param name="task">The object Task</param>
         /// <returns>The updated task/new created task.</returns>
-        //[Authorize]
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Task task)
         {
@@ -147,6 +148,7 @@ namespace LabIV.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult Delete(int id)
         {
             var result = tasksService.Delete(id);

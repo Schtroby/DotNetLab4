@@ -1,5 +1,6 @@
 ﻿using LabIV.DTO;
 using LabIV.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -28,6 +29,7 @@ namespace LabIV.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
+        [Authorize]
         public IEnumerable<CommentFilterDTO> GetAll([FromQuery]String filter)
         {
             return commentsService.GetAll(filter);
