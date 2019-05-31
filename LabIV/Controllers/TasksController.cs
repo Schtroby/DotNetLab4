@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LabIV.DTO;
+using LabIV.Models;
 using LabIV.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,10 +18,12 @@ namespace LabIV.Controllers
     public class TasksController : ControllerBase
     {
         private ITasksService tasksService;
+        private IUsersService usersService;
 
-        public TasksController(ITasksService tasksService)
+        public TasksController(ITasksService tasksService, IUsersService usersService)
         {
             this.tasksService = tasksService;
+            this.usersService = usersService;
         }
 
         // GET: api/Tasks
@@ -91,12 +94,13 @@ namespace LabIV.Controllers
         /// <response code="201">Returns the newly created item</response>
         /// <response code="400">If the item is null</response>
         [HttpPost]
-        [Authorize]
+        [Authorize (Roles = "Admin,Regular")]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
-        public void Post([FromBody] Task task)
+        public void Post([FromBody] TaskPostDTO task)
         {
-            tasksService.Create(task);
+            User addedBy = usersService.GetCurrentUser(HttpContext);
+            tasksService.Create(task, addedBy);
         }
 
         // PUT: api/Tasks/5

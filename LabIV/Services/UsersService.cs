@@ -1,5 +1,6 @@
 ﻿using LabIV.DTO;
 using LabIV.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -19,6 +20,7 @@ namespace LabIV.Services
     {
         UserGetDTO Authenticate(string username, string password);
         UserGetDTO Register(RegisterPostDTO registerInfo);
+        User GetCurrentUser(HttpContext httpContext);
         IEnumerable<UserGetDTO> GetAll();
     }
 
@@ -50,7 +52,8 @@ namespace LabIV.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Username.ToString())
+                    new Claim(ClaimTypes.Name, user.Username.ToString()),
+                    new Claim(ClaimTypes.Role, user.UserRole.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -100,10 +103,19 @@ namespace LabIV.Services
                 LastName = registerInfo.LastName,
                 FirstName = registerInfo.FirstName,
                 Password = ComputeSha256Hash(registerInfo.Password),
-                Username = registerInfo.Username
+                Username = registerInfo.Username,
+                UserRole = UserRole.Regular
             });
             context.SaveChanges();
             return Authenticate(registerInfo.Username, registerInfo.Password);
+        }
+
+        public User GetCurrentUser(HttpContext httpContext)
+        {
+            string username = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+            //string accountType = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod).Value;
+            //return _context.Users.FirstOrDefault(u => u.Username == username && u.AccountType.ToString() == accountType);
+            return context.Users.FirstOrDefault(u => u.Username == username);
         }
 
         public IEnumerable<UserGetDTO> GetAll()

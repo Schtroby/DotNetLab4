@@ -11,6 +11,17 @@ namespace LabIV.Models
         public TasksDbContext(DbContextOptions<TasksDbContext> options) : base(options)
         {
         }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<User>(entity => {
+                entity.HasIndex(u => u.Username).IsUnique();
+            });
+
+            builder.Entity<Comment>()
+                .HasOne(t => t.Task)
+                .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
 
         // DbSet = Repository
         // DbSet = O tabela din baza de date

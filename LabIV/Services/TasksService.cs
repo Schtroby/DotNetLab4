@@ -19,7 +19,7 @@ namespace LabIV.Services
         /// <returns></returns>
         PaginatedList<TaskGetDTO> GetAll(int page, DateTime? from, DateTime? to);
 
-        Task Create(Task task);
+        Task Create(TaskPostDTO task, User addedBy);
 
         Task Upsert(int id, Task task);
 
@@ -37,13 +37,15 @@ namespace LabIV.Services
             this.context = context;
         }
 
-        public Task Create(Task task)
+        public Task Create(TaskPostDTO task, User addedBy)
         {
+            Task taskAdd = TaskPostDTO.ToTask(task);
             task.DateClosed = null;
             task.DateAdded = DateTime.Now;
-            context.Tasks.Add(task);
+            taskAdd.Owner = addedBy;
+            context.Tasks.Add(taskAdd);
             context.SaveChanges();
-            return task;
+            return taskAdd;
         }
 
 

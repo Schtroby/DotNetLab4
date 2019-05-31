@@ -4,14 +4,16 @@ using LabIV.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LabIV.Migrations
 {
     [DbContext(typeof(TasksDbContext))]
-    partial class TasksDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190531080727_IndexForUserAndCascadeDelete")]
+    partial class IndexForUserAndCascadeDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,8 +86,6 @@ namespace LabIV.Migrations
                     b.Property<string>("LastName");
 
                     b.Property<string>("Password");
-
-                    b.Property<int>("UserRole");
 
                     b.Property<string>("Username");
 

@@ -4,14 +4,16 @@ using LabIV.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LabIV.Migrations
 {
     [DbContext(typeof(TasksDbContext))]
-    partial class TasksDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190531075246_AddOwnerForTasksAndComments")]
+    partial class AddOwnerForTasksAndComments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,15 +87,9 @@ namespace LabIV.Migrations
 
                     b.Property<string>("Password");
 
-                    b.Property<int>("UserRole");
-
                     b.Property<string>("Username");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Username")
-                        .IsUnique()
-                        .HasFilter("[Username] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -106,8 +102,7 @@ namespace LabIV.Migrations
 
                     b.HasOne("LabIV.Models.Task", "Task")
                         .WithMany("Comments")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("TaskId");
                 });
 
             modelBuilder.Entity("LabIV.Models.Task", b =>

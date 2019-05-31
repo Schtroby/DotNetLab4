@@ -29,7 +29,7 @@ namespace LabIV.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
-        [Authorize]
+       // [Authorize]
         public IEnumerable<CommentFilterDTO> GetAll([FromQuery]String filter)
         {
             return commentsService.GetAll(filter);
