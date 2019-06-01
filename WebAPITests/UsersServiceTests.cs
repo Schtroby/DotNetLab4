@@ -106,16 +106,9 @@ namespace Tests
                     Password = "1234567"
                 };
                 var result = usersService.Register(added);
+
+                var users = usersService.GetAll();
                
-                var users = context.Users.Select(user => new UserGetDTO
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    Username = user.Username,
-                    Token = null
-
-                });
-
                 Assert.IsNotEmpty(users);
                 Assert.AreEqual(1, users.Count());
                 //Assert.IsEmpty(users);

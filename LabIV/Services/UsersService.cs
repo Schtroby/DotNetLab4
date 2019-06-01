@@ -1,6 +1,7 @@
 ﻿using LabIV.DTO;
 using LabIV.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -18,9 +19,13 @@ namespace LabIV.Services
 {
     public interface IUsersService
     {
-        UserGetDTO Authenticate(string username, string password);
-        UserGetDTO Register(RegisterPostDTO registerInfo);
+        LogInGetDTO Authenticate(string username, string password);
+        LogInGetDTO Register(RegisterPostDTO registerInfo);
         User GetCurrentUser(HttpContext httpContext);
+        User Create(UserPostDTO user);
+        User Delete(int id);
+        User GetById(int id);
+        User Upsert(int id, User user);
         IEnumerable<UserGetDTO> GetAll();
     }
 
@@ -35,7 +40,7 @@ namespace LabIV.Services
             this.appSettings = appSettings.Value;
         }
 
-        public UserGetDTO Authenticate(string username, string password)
+        public LogInGetDTO Authenticate(string username, string password)
         {
             var user = context.Users
                 .SingleOrDefault(x => x.Username == username &&
@@ -59,7 +64,7 @@ namespace LabIV.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            var result = new UserGetDTO
+            var result = new LogInGetDTO
             {
                 Id = user.Id,
                 Email = user.Email,
@@ -89,7 +94,7 @@ namespace LabIV.Services
             }
         }
 
-        public UserGetDTO Register(RegisterPostDTO registerInfo)
+        public LogInGetDTO Register(RegisterPostDTO registerInfo)
         {
             User existing = context.Users.FirstOrDefault(u => u.Username == registerInfo.Username);
             if (existing != null)
@@ -126,8 +131,49 @@ namespace LabIV.Services
                 Id = user.Id,
                 Email = user.Email,
                 Username = user.Username,
-                Token = null
+                Role = user.UserRole
             });
+        }
+        public User Create(UserPostDTO user)
+        {
+            User userAdd = UserPostDTO.ToUser(user);
+            context.Users.Add(userAdd);
+            context.SaveChanges();
+            return userAdd;
+        }
+
+        public User Delete(int id)
+        {
+            var existing = context.Users.FirstOrDefault(user => user.Id == id);
+            if (existing == null)
+            {
+                return null;
+            }
+            context.Users.Remove(existing);
+            context.SaveChanges();
+            return existing;
+        }
+
+        public User GetById(int id)
+        {
+            return context.Users.FirstOrDefault(u => u.Id == id);
+        }
+
+        public User Upsert(int id, User user)
+        {
+            var existing = context.Users.AsNoTracking().FirstOrDefault(u => u.Id == id);
+            if (existing == null)
+            {
+                context.Users.Add(user);
+                context.SaveChanges();
+                return user;
+
+            }
+
+            user.Id = id;
+            context.Users.Update(user);
+            context.SaveChanges();
+            return user;
         }
 
     }
