@@ -1,4 +1,5 @@
 ﻿using LabIV.DTO;
+using LabIV.Models;
 using LabIV.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +16,12 @@ namespace LabIV.Controllers
     public class CommentsController : ControllerBase
     {
         private ICommentsService commentsService;
+        private IUsersService usersService;
 
-        public CommentsController(ICommentsService commentsService)
+        public CommentsController(ICommentsService commentsService, IUsersService usersService)
         {
             this.commentsService = commentsService;
+            this.usersService = usersService;
         }
 
         /// <summary>
@@ -34,5 +37,53 @@ namespace LabIV.Controllers
         {
             return commentsService.GetAll(filter);
         }
+
+        [HttpGet("{id}")]
+        [Authorize]
+        public IActionResult Get(int id)
+        {
+            var found = commentsService.GetById(id);
+            if (found == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(found);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Regular")]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        public void Post([FromBody] CommentPostDTO comment)
+        {
+            User addedBy = usersService.GetCurrentUser(HttpContext);
+            commentsService.Create(comment, addedBy);
+        }
+
+        [Authorize]
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] Comment comment)
+        {
+            var result = commentsService.Upsert(id, comment);
+            return Ok(result);
+        }
+
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [HttpDelete("{id}")]
+        [Authorize]
+        public IActionResult Delete(int id)
+        {
+            var result = commentsService.Delete(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+
     }
 }

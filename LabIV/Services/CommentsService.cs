@@ -12,6 +12,14 @@ namespace LabIV.Services
     public interface ICommentsService
     {
         IEnumerable<CommentFilterDTO> GetAll(String keyword);
+
+        Comment Create(CommentPostDTO task, User addedBy);
+
+        Comment Upsert(int id, Comment comment);
+
+        Comment Delete(int id);
+
+        Comment GetById(int id);
     }
 
     public class CommentsService : ICommentsService
@@ -21,6 +29,26 @@ namespace LabIV.Services
         public CommentsService(TasksDbContext context)
         {
             this.context = context;
+        }
+
+        public Comment Create(CommentPostDTO comment, User addedBy)
+        {
+            Comment commentAdd = CommentPostDTO.ToComment(comment);
+            context.Comments.Add(commentAdd);
+            context.SaveChanges();
+            return commentAdd;
+        }
+
+        public Comment Delete(int id)
+        {
+            var existing = context.Comments.FirstOrDefault(comment => comment.Id == id);
+            if (existing == null)
+            {
+                return null;
+            }
+            context.Comments.Remove(existing);
+            context.SaveChanges();
+            return existing;
         }
 
         public IEnumerable<CommentFilterDTO> GetAll(String keyword)
@@ -66,6 +94,28 @@ namespace LabIV.Services
                 return resultAllComments;
             }
             return resultFilteredComments;
+        }
+
+        public Comment GetById(int id)
+        {
+            return context.Comments.FirstOrDefault(c => c.Id == id);
+        }
+
+        public Comment Upsert(int id, Comment comment)
+        {
+            var existing = context.Comments.AsNoTracking().FirstOrDefault(c => c.Id == id);
+            if (existing == null)
+            {
+                context.Comments.Add(comment);
+                context.SaveChanges();
+                return comment;
+
+            }
+
+            comment.Id = id;
+            context.Comments.Update(comment);
+            context.SaveChanges();
+            return comment;
         }
     }
 }

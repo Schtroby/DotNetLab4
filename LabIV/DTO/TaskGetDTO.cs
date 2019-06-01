@@ -25,8 +25,9 @@ namespace LabIV.DTO
         public DateTime? DateClosed { get; set; }
 
         public int NumberOfComments { get; set; }
-
+        
         public List<Comment> Comments { get; set; }
+
 
         public static TaskGetDTO FromTask(Task task)
         {
@@ -41,8 +42,8 @@ namespace LabIV.DTO
                 TaskState = task.TaskState,
                 DateClosed = task.DateClosed,
                 //Comments = task.Comments,
-                NumberOfComments = task.Comments.Count
-
+                NumberOfComments = task.Comments.Count,
+                
             };
         }
     }
