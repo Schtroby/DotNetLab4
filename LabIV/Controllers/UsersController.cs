@@ -72,10 +72,21 @@ namespace LabIV.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            User currentLogedUser = _userService.GetCurrentUser(HttpContext);
+           
+            
             var result = _userService.Delete(id);
             if (result == null)
             {
                 return NotFound();
+            }
+            else if (currentLogedUser.UserRole == UserRole.UserManager)
+            {
+                User getUser = _userService.GetById(id);
+                if(getUser.UserRole == UserRole.Admin)
+                {
+                    return Forbid();
+                }
             }
 
             return Ok(result);
@@ -98,11 +109,39 @@ namespace LabIV.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] User user)
+        public IActionResult Put(int id, [FromBody] UserPostDTO user)
         {
+            User currentLogedUser = _userService.GetCurrentUser(HttpContext);
+            User getUser = _userService.GetById(id);
+            var regDate = currentLogedUser.RegistrationDate;
+            var currentDate = DateTime.Now;
+            var minDate = currentDate.Subtract(regDate).Days / (365 / 12);
 
-            var result = _userService.Upsert(id, user);
-            return Ok(result);
+            if (currentLogedUser.UserRole == UserRole.UserManager && getUser.UserRole == UserRole.Admin && minDate < 6 )
+            {
+                return Forbid();
+
+            }
+            else if (currentLogedUser.UserRole == UserRole.UserManager && minDate >= 6)
+            {
+                var result = _userService.Upsert(id, user);
+                return Ok(result);
+
+            }
+            UserPostDTO newUser = new UserPostDTO
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Username = user.Username,
+                Email = user.Email,
+                Password = user.Password,
+                UserRole = getUser.UserRole.ToString()
+            };
+            var result1 = _userService.Upsert(id, newUser);
+            return Ok(result1);
+
+
+
         }
     }
 }

@@ -25,7 +25,7 @@ namespace LabIV.Services
         User Create(UserPostDTO user);
         User Delete(int id);
         User GetById(int id);
-        User Upsert(int id, User user);
+        User Upsert(int id, UserPostDTO user);
         IEnumerable<UserGetDTO> GetAll();
     }
 
@@ -159,21 +159,22 @@ namespace LabIV.Services
             return context.Users.FirstOrDefault(u => u.Id == id);
         }
 
-        public User Upsert(int id, User user)
+        public User Upsert(int id, UserPostDTO user)
         {
             var existing = context.Users.AsNoTracking().FirstOrDefault(u => u.Id == id);
             if (existing == null)
             {
-                context.Users.Add(user);
+                User UserAdd = UserPostDTO.ToUser(user);
+                context.Users.Add(UserAdd);
                 context.SaveChanges();
-                return user;
+                return UserAdd;
 
             }
-
+            User UserUp = UserPostDTO.ToUser(user);
             user.Id = id;
-            context.Users.Update(user);
+            context.Users.Update(UserUp);
             context.SaveChanges();
-            return user;
+            return UserUp;
         }
 
     }
