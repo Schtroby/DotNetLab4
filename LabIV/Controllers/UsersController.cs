@@ -49,13 +49,14 @@ namespace LabIV.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize(Roles = "Admin,UserManager")]
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
             return Ok(users);
         }
 
+        [Authorize(Roles = "Admin,UserManager")]
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
@@ -65,7 +66,7 @@ namespace LabIV.Controllers
             _userService.Create(user);
         }
 
-
+        [Authorize(Roles = "Admin,UserManager")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpDelete("{id}")]
@@ -81,6 +82,7 @@ namespace LabIV.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,UserManager")]
         public IActionResult Get(int id)
         {
             var found = _userService.GetById(id);
@@ -91,7 +93,7 @@ namespace LabIV.Controllers
 
             return Ok(found);
         }
-
+        [Authorize(Roles = "Admin,UserManager")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         // PUT: api/Users/5

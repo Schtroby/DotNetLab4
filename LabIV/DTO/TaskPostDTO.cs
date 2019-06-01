@@ -58,7 +58,8 @@ namespace LabIV.DTO
                 TaskImportance = TaskImportance,
                 TaskState = TaskState,
                 DateClosed = task.DateClosed,
-              
+                Comments = task.Comments
+                             
             };
 
         }

@@ -34,6 +34,7 @@ namespace LabIV.Services
         public Comment Create(CommentPostDTO comment, User addedBy)
         {
             Comment commentAdd = CommentPostDTO.ToComment(comment);
+            commentAdd.Owner = addedBy;
             context.Comments.Add(commentAdd);
             context.SaveChanges();
             return commentAdd;

@@ -32,14 +32,14 @@ namespace LabIV.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
-       // [Authorize]
+        [Authorize(Roles = "Admin,Regular")]
         public IEnumerable<CommentFilterDTO> GetAll([FromQuery]String filter)
         {
             return commentsService.GetAll(filter);
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(Roles = "Admin,Regular")]
         public IActionResult Get(int id)
         {
             var found = commentsService.GetById(id);
@@ -61,7 +61,7 @@ namespace LabIV.Controllers
             commentsService.Create(comment, addedBy);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin,Regular")]
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Comment comment)
         {
@@ -72,7 +72,7 @@ namespace LabIV.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = "Admin,Regular")]
         public IActionResult Delete(int id)
         {
             var result = commentsService.Delete(id);

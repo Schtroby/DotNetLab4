@@ -10,8 +10,8 @@ namespace LabIV.DTO
     {
         public string Text { get; set; }
         public bool Important { get; set; }
-        public Task Task { get; set; }
-        public User Owner { get; set; }
+        
+
 
         public static Comment ToComment(CommentPostDTO comment)
         {
@@ -19,9 +19,8 @@ namespace LabIV.DTO
             {
                 Text = comment.Text,
                 Important = comment.Important,
-                Task = comment.Task,
-                Owner = comment.Owner
 
+          
             };
         }
     }
