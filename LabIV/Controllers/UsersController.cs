@@ -49,7 +49,7 @@ namespace LabIV.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,UserManager")]
+       // [Authorize(Roles = "Admin,UserManager")]
         public IActionResult GetAll()
         {
             var users = _userService.GetAll();
@@ -73,24 +73,50 @@ namespace LabIV.Controllers
         public IActionResult Delete(int id)
         {
             User currentLogedUser = _userService.GetCurrentUser(HttpContext);
-           
-            
+            var regDate = currentLogedUser.RegistrationDate;
+            var currentDate = DateTime.Now;
+            var minDate = currentDate.Subtract(regDate).Days / (365 / 12);
+
+            if (currentLogedUser.UserRole == UserRole.UserManager)
+            {
+                User getUser = _userService.GetById(id);
+                if (getUser.UserRole == UserRole.Admin)
+                {
+                    return Forbid();
+                }
+               
+            }
+
+            if(currentLogedUser.UserRole == UserRole.UserManager)
+            {
+                User getUser = _userService.GetById(id);
+                if (getUser.UserRole == UserRole.UserManager && minDate <= 6)
+
+                    return Forbid();
+            }
+            if (currentLogedUser.UserRole == UserRole.UserManager)
+            {
+                User getUser = _userService.GetById(id);
+                if (getUser.UserRole == UserRole.UserManager && minDate >= 6)
+                {
+                    var result1= _userService.Delete(id);
+                    return Ok(result1);
+                }
+                
+
+            }
+
             var result = _userService.Delete(id);
             if (result == null)
             {
                 return NotFound();
             }
-            else if (currentLogedUser.UserRole == UserRole.UserManager)
-            {
-                User getUser = _userService.GetById(id);
-                if(getUser.UserRole == UserRole.Admin)
-                {
-                    return Forbid();
-                }
-            }
+           
 
             return Ok(result);
         }
+
+
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,UserManager")]
@@ -109,39 +135,60 @@ namespace LabIV.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] UserPostDTO user)
+        public IActionResult Put(int id, [FromBody] User user)
         {
             User currentLogedUser = _userService.GetCurrentUser(HttpContext);
-            User getUser = _userService.GetById(id);
             var regDate = currentLogedUser.RegistrationDate;
             var currentDate = DateTime.Now;
             var minDate = currentDate.Subtract(regDate).Days / (365 / 12);
 
-            if (currentLogedUser.UserRole == UserRole.UserManager && getUser.UserRole == UserRole.Admin && minDate < 6 )
+            if (currentLogedUser.UserRole == UserRole.UserManager)
             {
-                return Forbid();
+                User getUser = _userService.GetById(id);
+                if (getUser == null)
+                {
+                    return NotFound();
+                }
 
             }
-            else if (currentLogedUser.UserRole == UserRole.UserManager && minDate >= 6)
+
+            if (currentLogedUser.UserRole == UserRole.UserManager)
             {
-                var result = _userService.Upsert(id, user);
-                return Ok(result);
+                User getUser = _userService.GetById(id);
+                if (getUser.UserRole == UserRole.Admin)
+                {
+                    return Forbid();
+                }
 
             }
-            UserPostDTO newUser = new UserPostDTO
+
+            if (currentLogedUser.UserRole == UserRole.UserManager)
             {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Username = user.Username,
-                Email = user.Email,
-                Password = user.Password,
-                UserRole = getUser.UserRole.ToString()
-            };
-            var result1 = _userService.Upsert(id, newUser);
-            return Ok(result1);
+                User getUser = _userService.GetById(id);
+                if (getUser.UserRole == UserRole.UserManager && minDate <= 6)
+
+                    return Forbid();
+            }
+
+            if (currentLogedUser.UserRole == UserRole.UserManager)
+            {
+                User getUser = _userService.GetById(id);
+                if (getUser.UserRole == UserRole.UserManager && minDate >= 6)
+                {
+                    var result1 = _userService.Upsert(id, user);
+                    return Ok(result1);
+                }
+                
+            }
+            
+
+            var result = _userService.Upsert(id, user);
+            return Ok(result);
 
 
 
         }
+
     }
 }
+
