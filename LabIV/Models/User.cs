@@ -24,5 +24,6 @@ namespace LabIV.Models
         [EnumDataType(typeof(UserRole))]
         public UserRole UserRole { get; set; }
         public DateTime RegistrationDate { get; set; }
+        public IEnumerable<Task> Tasks { get; set; }
     }
 }

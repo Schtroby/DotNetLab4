@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LabIV.Migrations
 {
     [DbContext(typeof(TasksDbContext))]
-    [Migration("20190601200811_RegistrationDate")]
-    partial class RegistrationDate
+    [Migration("20190608080020_AddUniqueUsername")]
+    partial class AddUniqueUsername
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -110,14 +110,13 @@ namespace LabIV.Migrations
 
                     b.HasOne("LabIV.Models.Task", "Task")
                         .WithMany("Comments")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("TaskId");
                 });
 
             modelBuilder.Entity("LabIV.Models.Task", b =>
                 {
                     b.HasOne("LabIV.Models.User", "Owner")
-                        .WithMany()
+                        .WithMany("Tasks")
                         .HasForeignKey("OwnerId");
                 });
 #pragma warning restore 612, 618

@@ -115,8 +115,9 @@ namespace LabIV.Migrations
             modelBuilder.Entity("LabIV.Models.Task", b =>
                 {
                     b.HasOne("LabIV.Models.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .WithMany("Tasks")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

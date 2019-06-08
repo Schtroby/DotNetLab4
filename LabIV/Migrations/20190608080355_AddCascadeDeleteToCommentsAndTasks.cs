@@ -2,7 +2,7 @@
 
 namespace LabIV.Migrations
 {
-    public partial class IndexForUserAndCascadeDelete : Migration
+    public partial class AddCascadeDeleteToCommentsAndTasks : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -10,25 +10,23 @@ namespace LabIV.Migrations
                 name: "FK_Comments_Tasks_TaskId",
                 table: "Comments");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "Username",
-                table: "Users",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldNullable: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_Username",
-                table: "Users",
-                column: "Username",
-                unique: true,
-                filter: "[Username] IS NOT NULL");
+            migrationBuilder.DropForeignKey(
+                name: "FK_Tasks_Users_OwnerId",
+                table: "Tasks");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Comments_Tasks_TaskId",
                 table: "Comments",
                 column: "TaskId",
                 principalTable: "Tasks",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Tasks_Users_OwnerId",
+                table: "Tasks",
+                column: "OwnerId",
+                principalTable: "Users",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }
@@ -39,22 +37,23 @@ namespace LabIV.Migrations
                 name: "FK_Comments_Tasks_TaskId",
                 table: "Comments");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Users_Username",
-                table: "Users");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Username",
-                table: "Users",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldNullable: true);
+            migrationBuilder.DropForeignKey(
+                name: "FK_Tasks_Users_OwnerId",
+                table: "Tasks");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Comments_Tasks_TaskId",
                 table: "Comments",
                 column: "TaskId",
                 principalTable: "Tasks",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Tasks_Users_OwnerId",
+                table: "Tasks",
+                column: "OwnerId",
+                principalTable: "Users",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }

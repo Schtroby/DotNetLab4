@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LabIV.Migrations
 {
     [DbContext(typeof(TasksDbContext))]
-    [Migration("20190531075246_AddOwnerForTasksAndComments")]
-    partial class AddOwnerForTasksAndComments
+    [Migration("20190608080355_AddCascadeDeleteToCommentsAndTasks")]
+    partial class AddCascadeDeleteToCommentsAndTasks
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -87,9 +87,17 @@ namespace LabIV.Migrations
 
                     b.Property<string>("Password");
 
+                    b.Property<DateTime>("RegistrationDate");
+
+                    b.Property<int>("UserRole");
+
                     b.Property<string>("Username");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique()
+                        .HasFilter("[Username] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -102,14 +110,16 @@ namespace LabIV.Migrations
 
                     b.HasOne("LabIV.Models.Task", "Task")
                         .WithMany("Comments")
-                        .HasForeignKey("TaskId");
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("LabIV.Models.Task", b =>
                 {
                     b.HasOne("LabIV.Models.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .WithMany("Tasks")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

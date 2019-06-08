@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LabIV.Migrations
 {
     [DbContext(typeof(TasksDbContext))]
-    [Migration("20190531093840_AddUserRole")]
-    partial class AddUserRole
+    [Migration("20190608075623_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -87,15 +87,13 @@ namespace LabIV.Migrations
 
                     b.Property<string>("Password");
 
+                    b.Property<DateTime>("RegistrationDate");
+
                     b.Property<int>("UserRole");
 
                     b.Property<string>("Username");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Username")
-                        .IsUnique()
-                        .HasFilter("[Username] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -108,14 +106,13 @@ namespace LabIV.Migrations
 
                     b.HasOne("LabIV.Models.Task", "Task")
                         .WithMany("Comments")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("TaskId");
                 });
 
             modelBuilder.Entity("LabIV.Models.Task", b =>
                 {
                     b.HasOne("LabIV.Models.User", "Owner")
-                        .WithMany()
+                        .WithMany("Tasks")
                         .HasForeignKey("OwnerId");
                 });
 #pragma warning restore 612, 618
